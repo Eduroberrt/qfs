@@ -1,0 +1,58 @@
+# Dependencies
+frontend/node_modules/
+node_modules/
+
+# Production builds
+frontend/.next/
+frontend/out/
+frontend/build/
+*.pack.gz
+
+# Compiled binaries and build artifacts
+*.node
+*.tsc.js
+*_tsc.js
+typescript.js
+main-app.js
+
+# Environment variables
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+/static/
+/media/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

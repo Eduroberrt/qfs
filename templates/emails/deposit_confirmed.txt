@@ -1,0 +1,32 @@
+QFS Ledger - Deposit Confirmed
+=============================
+
+Dear {{ user.first_name|default:user.username }},
+
+🎉 GREAT NEWS! Your cryptocurrency deposit has been successfully confirmed and processed.
+
+DEPOSIT DETAILS:
+================
+Transaction ID:  #{{ deposit.id }}
+Cryptocurrency:  {{ deposit.get_coin_type_display }}
+Amount:  ${{ usd_amount|floatformat:2 }} USD
+Wallet Address:  {{ deposit.wallet_address }}
+Status:  CONFIRMED
+
+Your account balance has been automatically updated with this deposit. You can now use these funds for trading, transfers, or other platform activities.
+
+{% if deposit.admin_notes %}
+ADMIN NOTES:
+============
+{{ deposit.admin_notes }}
+{% endif %}
+
+View your updated dashboard: {{ site_url }}/dashboard
+
+Thank you for using QFS Ledger!
+
+If you have any questions, please contact our support team.
+
+---
+This is an automated message. Please do not reply to this email.
+QFS Ledger - Quantum Financial System

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit Confirmed - QFS Ledger</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #99E39E;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #99E39E;
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .deposit-details {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #99E39E;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .detail-value {
+            color: #333;
+        }
+        .status-confirmed {
+            color: #333;
+            font-weight: normal;
+        }
+        .amount-usd {
+            color: #333;
+            font-weight: normal;
+        }
+        .footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 14px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #99E39E;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .button:hover {
+            background-color: #7DD87F;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>QFS Ledger</h1>
+            <p>Quantum Financial System</p>
+        </div>
+        
+        <div class="content">
+            <h2>🎉 Your Deposit Has Been Confirmed!</h2>
+            
+            <p>Dear {{ user.first_name|default:user.username }},</p>
+            
+            <p>Great news! Your cryptocurrency deposit has been successfully confirmed and processed. Your account balance has been updated accordingly.</p>
+            
+            <div class="deposit-details">
+                <h3>Deposit Details</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Transaction ID: </span>
+                    <span class="detail-value">#{{ deposit.id }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Cryptocurrency: </span>
+                    <span class="detail-value">{{ deposit.get_coin_type_display }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Amount: </span>
+                    <span class="detail-value">${{ usd_amount|floatformat:2 }} USD</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Wallet Address: </span>
+                    <span class="detail-value">{{ deposit.wallet_address }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Status: </span>
+                    <span class="detail-value">CONFIRMED</span>
+                </div>
+            </div>
+            
+            <p>Your account balance has been automatically updated with this deposit. You can now use these funds for trading, transfers, or other platform activities.</p>
+            
+            <div style="text-align: center;">
+                <a href="{{ site_url }}/dashboard" class="button">View Your Dashboard</a>
+            </div>
+            
+            {% if deposit.admin_notes %}
+            <div style="background-color: #e3f2fd; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <h4>Admin Notes:</h4>
+                <p>{{ deposit.admin_notes }}</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="footer">
+            <p>Thank you for using QFS Ledger!</p>
+            <p>If you have any questions, please contact our support team.</p>
+            <p><small>This is an automated message. Please do not reply to this email.</small></p>
+        </div>
+    </div>
+</body>
+</html>

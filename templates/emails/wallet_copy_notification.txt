@@ -1,0 +1,20 @@
+QFS Ledger Admin - Wallet Copy Alert
+===================================
+
+🔔 WALLET ADDRESS COPIED
+
+A user has copied a cryptocurrency wallet address from the receive details page.
+
+COPY EVENT DETAILS:
+==================
+User:           {{ user.username }}
+Email:          {{ user.email }}
+Cryptocurrency: {{ coin_type }}
+Wallet Address: {{ wallet_address }}
+IP Address:     {{ ip_address }}
+Copied At:      {{ copied_at|date:"F d, Y g:i A" }}
+{% if user_agent %}Browser:        {{ user_agent|truncatechars:100 }}{% endif %}
+
+---
+This is an automated administrative notification from QFS Ledger.
+Do not reply to this email.

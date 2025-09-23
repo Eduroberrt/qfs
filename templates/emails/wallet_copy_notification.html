@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Address Copied - QFS Ledger Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #99E39E;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #99E39E;
+            margin: 0;
+            font-size: 28px;
+        }
+        .alert {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .alert-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        .content {
+            margin-bottom: 30px;
+        }
+        .user-details {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #99E39E;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .detail-value {
+            color: #333;
+        }
+        .footer {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 14px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #99E39E;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .button:hover {
+            background-color: #7DD87F;
+        }
+        .wallet-address {
+            font-family: monospace;
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>QFS Ledger Admin</h1>
+            <p>Wallet Copy Alert</p>
+        </div>
+        
+        <div class="content">
+            <div class="alert">
+                <div class="alert-title">🔔 Wallet Address Copied</div>
+                <p>A user has copied a cryptocurrency wallet address from the receive details page.</p>
+            </div>
+            
+            <div class="user-details">
+                <h3>Copy Event Details</h3>
+                <div class="detail-row">
+                    <span class="detail-label">User: </span>
+                    <span class="detail-value">{{ user.username }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Email: </span>
+                    <span class="detail-value">{{ user.email }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Cryptocurrency: </span>
+                    <span class="detail-value">{{ coin_type }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Wallet Address: </span>
+                    <span class="detail-value wallet-address">{{ wallet_address }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">IP Address: </span>
+                    <span class="detail-value">{{ ip_address }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Copied At: </span>
+                    <span class="detail-value">{{ copied_at|date:"F d, Y g:i A" }}</span>
+                </div>
+                {% if user_agent %}
+                <div class="detail-row">
+                    <span class="detail-label">Browser: </span>
+                    <span class="detail-value">{{ user_agent|truncatechars:100 }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated administrative notification from QFS Ledger.</p>
+            <p><small>Do not reply to this email.</small></p>
+        </div>
+    </div>
+</body>
+</html>
