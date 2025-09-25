@@ -153,7 +153,7 @@ const Dashboard = () => {
       <nav className="bg-section bg-opacity-20 border-b border-section border-opacity-20 px-6 py-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <div className="text-xl font-bold text-white">QFS Vault Ledger</div>
+          <div className="text-xl font-bold text-white">QFS <span className="text-green-500">Vault Ledger</span></div>
           
           {/* Right side - Notifications & Profile */}
           <div className="flex items-center gap-4">

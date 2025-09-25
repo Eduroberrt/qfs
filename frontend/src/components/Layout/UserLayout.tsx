@@ -61,7 +61,7 @@ const UserLayout = ({ children }: UserLayoutProps) => {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <Link href="/dashboard" className="text-xl font-bold text-white hover:text-primary transition-colors">
-            QFS Vault Ledger
+            QFS <span className="text-green-500">Vault Ledger</span>
           </Link>
           
           {/* Right side - Notifications & Profile */}

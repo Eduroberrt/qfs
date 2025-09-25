@@ -1,15 +1,12 @@
 """
 Email services for QFS Ledger application
 """
-import logging
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.utils import timezone
 from typing import Optional
 from .models import DepositTransaction
-
-logger = logging.getLogger(__name__)
 
 
 def send_deposit_confirmation_email(deposit: DepositTransaction) -> bool:
@@ -25,18 +22,15 @@ def send_deposit_confirmation_email(deposit: DepositTransaction) -> bool:
     try:
         # Check if email was already sent to prevent duplicates
         if deposit.email_sent:
-            logger.info(f"Email already sent for deposit {deposit.id}")
             return True
             
         # Check if deposit is confirmed
         if deposit.status != 'confirmed':
-            logger.warning(f"Attempted to send confirmation email for non-confirmed deposit {deposit.id}")
             return False
             
         # Get user email
         user_email = deposit.user.email
         if not user_email:
-            logger.error(f"No email address found for user {deposit.user.username}")
             return False
             
         # Prepare email context
@@ -90,11 +84,9 @@ def send_deposit_confirmation_email(deposit: DepositTransaction) -> bool:
             deposit.confirmed_at = timezone.now()
         deposit.save(update_fields=['email_sent', 'confirmed_at'])
         
-        logger.info(f"Deposit confirmation email sent successfully to {user_email} for deposit {deposit.id}")
         return True
         
     except Exception as e:
-        logger.error(f"Failed to send deposit confirmation email for deposit {deposit.id}: {str(e)}")
         return False
 
 
@@ -130,9 +122,7 @@ def send_bulk_deposit_confirmation_emails(deposits: list[DepositTransaction]) ->
         except Exception as e:
             results['failed'] += 1
             results['errors'].append(f"Deposit {deposit.id}: {str(e)}")
-            logger.error(f"Error processing deposit {deposit.id}: {str(e)}")
     
-    logger.info(f"Bulk email results: {results['success']} sent, {results['failed']} failed, {results['skipped']} skipped")
     return results
 
 
@@ -151,7 +141,6 @@ def send_wallet_copy_notification(tracking_record) -> bool:
         admin_email = getattr(settings, 'ADMIN_EMAIL', 'bornorbang@gmail.com')
         
         if not admin_email:
-            logger.warning("No admin email address configured for wallet copy notification")
             return False
         
         # Prepare email context
@@ -184,9 +173,7 @@ def send_wallet_copy_notification(tracking_record) -> bool:
         # Send email
         email.send()
         
-        logger.info(f"Wallet copy notification sent to {admin_email} for user {tracking_record.user.username}")
         return True
         
     except Exception as e:
-        logger.error(f"Failed to send wallet copy notification: {str(e)}")
         return False

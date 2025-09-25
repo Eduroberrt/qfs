@@ -1,9 +1,16 @@
 "use client";
 import { Suspense } from 'react';
-import ResetPassword from '@/components/Auth/ResetPassword';
+// import ResetPassword from '@/components/Auth/ResetPassword';
 
 function ResetPasswordContent() {
-  return <ResetPassword />;
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">Reset Password</h1>
+        <p className="text-gray-600">This feature is temporarily unavailable.</p>
+      </div>
+    </div>
+  );
 }
 
 export default function ResetPasswordPage() {

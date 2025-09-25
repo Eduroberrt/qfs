@@ -53,10 +53,17 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
 def register_user(request):
     """User registration endpoint"""
     try:
+        # Add some debugging
+        print(f"Registration request received: {request.method}")
+        print(f"Request data: {request.data}")
+        print(f"Request headers: {dict(request.headers)}")
+        
         data = request.data
         name = data.get('name')
         email = data.get('email')
         password = data.get('password')
+        
+        print(f"Parsed data - name: {name}, email: {email}, password: {'***' if password else None}")
         
         # Validate required fields
         if not all([name, email, password]):
@@ -78,6 +85,8 @@ def register_user(request):
             first_name=name
         )
         
+        print(f"User created successfully: {user.id}")
+        
         # Generate JWT tokens
         refresh = RefreshToken.for_user(user)
         access_token = refresh.access_token
@@ -96,6 +105,9 @@ def register_user(request):
         }, status=status.HTTP_201_CREATED)
         
     except Exception as e:
+        print(f"Registration error: {str(e)}")
+        import traceback
+        print(f"Full traceback: {traceback.format_exc()}")
         return Response({
             'error': f'Registration failed: {str(e)}'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
