@@ -139,13 +139,15 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
 }
 
-# CORS
+# CORS - Enhanced configuration for production
 CORS_ALLOWED_ORIGINS = [
     "https://www.qfsvaultledger.org",
     "https://qfsvaultledger.org",
 ]
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_ALL_ORIGINS = True  # TEMPORARY: Allow all origins for debugging
+
+# Explicitly allow common HTTP methods
 CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',
@@ -154,6 +156,8 @@ CORS_ALLOW_METHODS = [
     'POST',
     'PUT',
 ]
+
+# Enhanced headers to ensure CORS works properly
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
@@ -164,8 +168,17 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
+    'x-forwarded-for',
+    'x-forwarded-proto',
+    'cache-control',
+    'pragma',
 ]
+
 CORS_PREFLIGHT_MAX_AGE = 86400
+
+# Additional CORS settings for production reliability
+CORS_REPLACE_HTTPS_REFERER = True
+CORS_ORIGIN_ALLOW_ALL = False
 
 # Email (Mailgun production)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
