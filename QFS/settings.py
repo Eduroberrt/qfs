@@ -173,7 +173,6 @@ EMAIL_HOST = 'smtp.mailgun.org'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-
 DEFAULT_FROM_EMAIL = 'support@qfsvaultledger.org'
 ADMIN_EMAIL = 'Bornorbang@gmail.com'
 SERVER_EMAIL = DEFAULT_FROM_EMAIL

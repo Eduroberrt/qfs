@@ -214,6 +214,139 @@ def change_password(request):
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def forgot_password(request):
+    """Request password reset"""
+    from django.core.mail import send_mail
+    from django.contrib.auth.tokens import PasswordResetTokenGenerator
+    from django.utils.http import urlsafe_base64_encode
+    from django.utils.encoding import force_bytes
+    from django.conf import settings
+    import uuid
+    
+    try:
+        data = request.data
+        email = data.get('email')
+        
+        if not email:
+            return Response({
+                'error': 'Email is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            # Don't reveal if user exists or not for security
+            return Response({
+                'message': 'If an account with this email exists, you will receive a password reset email.'
+            }, status=status.HTTP_200_OK)
+        
+        # Generate password reset token
+        token_generator = PasswordResetTokenGenerator()
+        token = token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        
+        # Create reset URL (frontend will handle this)
+        reset_url = f"{settings.FRONTEND_URL or 'https://www.qfsvaultledger.org'}/reset-password?token={uid}-{token}"
+        
+        # Send email (if SMTP is configured)
+        try:
+            subject = 'Password Reset - QFS Vault Ledger'
+            message = f"""
+Hi {user.first_name or user.username},
+
+You have requested to reset your password for QFS Vault Ledger.
+
+Click the link below to reset your password:
+{reset_url}
+
+This link will expire in 24 hours for security reasons.
+
+If you did not request this password reset, please ignore this email.
+
+Best regards,
+QFS Vault Ledger Team
+            """
+            
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL or 'noreply@qfsvaultledger.org',
+                [email],
+                fail_silently=False,
+            )
+            
+        except Exception as email_error:
+            print(f"Failed to send password reset email: {email_error}")
+            # Continue anyway - we'll return success to not reveal user existence
+        
+        return Response({
+            'message': 'If an account with this email exists, you will receive a password reset email.'
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        print(f"Forgot password error: {e}")
+        return Response({
+            'error': 'Failed to process password reset request'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def reset_password(request):
+    """Reset password with token"""
+    from django.contrib.auth.tokens import PasswordResetTokenGenerator
+    from django.utils.http import urlsafe_base64_decode
+    from django.utils.encoding import force_str
+    
+    try:
+        data = request.data
+        token = data.get('token')
+        password = data.get('password')
+        
+        if not token or not password:
+            return Response({
+                'error': 'Token and password are required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if len(password) < 6:
+            return Response({
+                'error': 'Password must be at least 6 characters long'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Parse token
+        try:
+            uid, reset_token = token.split('-', 1)
+            uid = force_str(urlsafe_base64_decode(uid))
+            user = User.objects.get(pk=uid)
+        except (ValueError, TypeError, OverflowError, User.DoesNotExist):
+            return Response({
+                'error': 'Invalid reset token'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Verify token
+        token_generator = PasswordResetTokenGenerator()
+        if not token_generator.check_token(user, reset_token):
+            return Response({
+                'error': 'Invalid or expired reset token'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Reset password
+        user.set_password(password)
+        user.save()
+        
+        return Response({
+            'message': 'Password reset successfully'
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        print(f"Reset password error: {e}")
+        return Response({
+            'error': 'Failed to reset password'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 # KYC Views
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

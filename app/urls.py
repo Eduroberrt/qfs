@@ -14,6 +14,8 @@ urlpatterns = [
     path('auth/login/', views.login_user, name='login_user'),
     path('auth/profile/', views.user_profile, name='user_profile'),
     path('auth/change-password/', views.change_password, name='change_password'),
+    path('auth/forgot-password/', views.forgot_password, name='forgot_password'),
+    path('auth/reset-password/', views.reset_password, name='reset_password'),
     # KYC endpoints
     path('kyc/submit/', views.submit_kyc_document, name='submit_kyc_document'),
     path('kyc/status/', views.kyc_status, name='kyc_status'),

@@ -78,7 +78,7 @@ const ReceiveDetailsContent = () => {
         return;
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://f097c998265d.ngrok-free.app'}/api/deposits/wallet-address/?coin_type=${coin}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.qfsvaultledger.org'}/api/deposits/wallet-address/?coin_type=${coin}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -110,7 +110,7 @@ const ReceiveDetailsContent = () => {
       try {
         const token = authService.getAccessToken();
         if (token) {
-          await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://f097c998265d.ngrok-free.app'}/api/wallet/track-copy/`, {
+          await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.qfsvaultledger.org'}/api/wallet/track-copy/`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`,
