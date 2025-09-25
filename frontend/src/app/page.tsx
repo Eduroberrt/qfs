@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { Suspense } from "react";
 import Hero from "@/components/Home/Hero";
 import Work from "@/components/Home/work";
 import TimeLine from "@/components/Home/timeline";
@@ -10,7 +10,9 @@ import Perks from "@/components/Home/perks";
 export default function Home() {
   return (
     <main>
-      <Hero />
+      <Suspense fallback={<div>Loading...</div>}>
+        <Hero />
+      </Suspense>
       <Work />
       <TimeLine />
       <Platform />

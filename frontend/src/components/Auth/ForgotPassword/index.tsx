@@ -6,6 +6,7 @@ import Image from "next/image";
 import { getImagePrefix } from "@/utils/utils";
 import toast from "react-hot-toast";
 import Logo from "@/components/Layout/Header/Logo";
+import authService from '@/services/auth';
 
 interface ForgotPasswordProps {
   onClose: () => void;
@@ -24,26 +25,13 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onClose, onBackToSignIn
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setIsSuccess(true);
-        toast.success("Password reset email sent successfully!");
-      } else {
-        setError(data.message || "Failed to send reset email");
-        toast.error(data.message || "Failed to send reset email");
-      }
-    } catch (err) {
-      setError("Network error. Please try again.");
-      toast.error("Network error. Please try again.");
+      const result = await authService.requestPasswordReset(email);
+      setIsSuccess(true);
+      toast.success(result.message || "Password reset email sent successfully!");
+    } catch (error: any) {
+      const errorMessage = error.message || "Failed to send reset email";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -61,25 +49,12 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onClose, onBackToSignIn
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success("Reset email sent again!");
-      } else {
-        setError(data.message || "Failed to resend email");
-        toast.error(data.message || "Failed to resend email");
-      }
-    } catch (err) {
-      setError("Network error. Please try again.");
-      toast.error("Network error. Please try again.");
+      const result = await authService.requestPasswordReset(email);
+      toast.success(result.message || "Reset email sent again!");
+    } catch (error: any) {
+      const errorMessage = error.message || "Failed to resend email";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import UserLayout from '@/components/Layout/UserLayout';
 import authService from '@/services/auth';
 
-const ReceiveDetailsPage = () => {
+const ReceiveDetailsContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [selectedCoin, setSelectedCoin] = useState('');
@@ -252,6 +252,14 @@ const ReceiveDetailsPage = () => {
         </div>
       </div>
     </UserLayout>
+  );
+};
+
+const ReceiveDetailsPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ReceiveDetailsContent />
+    </Suspense>
   );
 };
 

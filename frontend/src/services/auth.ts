@@ -1,6 +1,6 @@
 // Authentication service for handling API calls and token management
 
-const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://f097c998265d.ngrok-free.app'}/api`;
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.qfsvaultledger.org'}/api`;
 
 export interface User {
   id: number;
@@ -302,6 +302,60 @@ class AuthService {
     }
 
     return result;
+  }
+
+  // Request password reset
+  async requestPasswordReset(email: string): Promise<{ message: string }> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/forgot-password/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        this.handleApiError(response, result);
+      }
+
+      return result;
+    } catch (error: any) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Network error. Please check your connection and try again.');
+      }
+      throw error;
+    }
+  }
+
+  // Reset password with token
+  async resetPassword(token: string, password: string): Promise<{ message: string }> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/reset-password/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+        body: JSON.stringify({ token, password }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        this.handleApiError(response, result);
+      }
+
+      return result;
+    } catch (error: any) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Network error. Please check your connection and try again.');
+      }
+      throw error;
+    }
   }
 
   // Admin: Review KYC submission
