@@ -26,7 +26,7 @@ const Dashboard = () => {
   // Fetch wallet balances
   const fetchWalletBalances = async () => {
     try {
-      const response = await authService.authenticatedRequest('http://localhost:8000/api/wallet/balance/');
+      const response = await authService.authenticatedRequest(`${authService.getApiBaseUrl()}/wallet/balance/`);
 
       if (response.ok) {
         const data = await response.json();

@@ -1,3 +1,4 @@
+
 """
 URL configuration for QFS project.
 
@@ -23,10 +24,32 @@ from django.shortcuts import render
 from django.views.static import serve
 import os
 
-def serve_react_app(request):
-    """Serve the Next.js React app"""
+def serve_nextjs_app(request, path=""):
+    """Serve the appropriate Next.js HTML file for a given path"""
     try:
+        # Remove leading slash if present
+        if path.startswith('/'):
+            path = path[1:]
+        
+        # If empty path, serve homepage
+        if not path:
+            return render(request, 'index.html')
+        
+        # Try to serve the specific HTML file for this route
+        # Next.js export creates dashboard.html, profile.html, etc.
+        html_file = f"{path}.html"
+        
+        # Check if the HTML file exists in the static files
+        import os
+        from django.conf import settings
+        file_path = os.path.join(settings.STATIC_ROOT, html_file)
+        
+        if os.path.exists(file_path):
+            return render(request, html_file)
+        
+        # Fallback to index.html for client-side routing
         return render(request, 'index.html')
+        
     except Exception as e:
         return HttpResponse(f"Error loading Next.js app: {e}<br>Path: {request.path}")
 
@@ -92,16 +115,17 @@ urlpatterns = [
     path('api/', include('app.urls')),
     path('api/token/', token_obtain_pair_view, name='token_obtain_pair'),
     path('api/token/refresh/', token_refresh_view, name='token_refresh'),
+
+    # Serve Next.js static files
+    re_path(r'^_next/(?P<path>.*)$', serve_nextjs_static, name='nextjs_static'),
     
-    # Serve Next.js static files at /_next/ URL (with or without /Crypgo/ prefix)
-    re_path(r'^(?:Crypgo/)?_next/(?P<path>.*)$', serve_nextjs_static, name='nextjs_static'),
+    # Serve images and assets
+    re_path(r'^images/(?P<path>.*)$', serve_images, name='serve_images'),
+    re_path(r'^assets/(?P<path>.*)$', serve_images, name='serve_assets'),
     
-    # Serve image files and other assets (common image extensions)
-    re_path(r'^(?:Crypgo/)?(?P<path>.*\.(png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot))$', serve_images, name='serve_images'),
-    
-    # Serve Next.js app for all other routes EXCEPT static files
-    # Use non-capturing group to avoid passing extra arguments
-    re_path(r'^(?!(?:Crypgo/_next|_next|static|media|admin|api)/).*$', serve_react_app, name='react_app'),
+    # Serve Next.js app for all other routes EXCEPT Django paths
+    # Use negative lookahead to exclude admin, api, _next, static, media, images, assets
+    re_path(r'^(?!(?:admin|api|_next|static|media|images|assets)(?:/|$))(?P<path>.*)$', serve_nextjs_app, name='nextjs_app'),
 ]
 
 # Add static files URL patterns for production

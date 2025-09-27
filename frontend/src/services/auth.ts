@@ -2,6 +2,9 @@
 
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.qfsvaultledger.org'}/api`;
 
+// Export API_BASE_URL for other components to use
+export { API_BASE_URL };
+
 export interface User {
   id: number;
   name: string;
@@ -378,6 +381,11 @@ class AuthService {
     }
 
     return result;
+  }
+
+  // Get the API base URL
+  getApiBaseUrl(): string {
+    return API_BASE_URL;
   }
 }
 

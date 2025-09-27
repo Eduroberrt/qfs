@@ -96,22 +96,14 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-STATIC_ROOT = '/home/eduroberrt/qfs/qfs/staticfiles'
-STATICFILES_DIRS = [BASE_DIR / 'static'] if (BASE_DIR / 'static').exists() else []
-
-# Force Django to serve static files in production (needed for PythonAnywhere)
-USE_STATIC_FILE_HANDLER = True
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+    BASE_DIR / 'frontend' / 'out',
+]
 
 # Whitenoise configuration for better static file serving
-WHITENOISE_USE_FINDERS = True
-WHITENOISE_AUTOREFRESH = True
-
-# Enable Django static file serving in production
-USE_STATIC_FILE_HANDLER = True
-
-# Static files storage for production
-if not DEBUG:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'

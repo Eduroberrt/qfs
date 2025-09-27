@@ -16,7 +16,7 @@ const ReceivePage = () => {
   // Fetch user deposits on component mount
   const fetchUserDeposits = async () => {
     try {
-      const response = await authService.authenticatedRequest('http://localhost:8000/api/deposits/');
+      const response = await authService.authenticatedRequest(`${authService.getApiBaseUrl()}/deposits/`);
 
       if (response.ok) {
         const data = await response.json();
@@ -43,7 +43,7 @@ const ReceivePage = () => {
     
     try {
       // Create the deposit transaction using authenticatedRequest for automatic token refresh
-      const response = await authService.authenticatedRequest('http://localhost:8000/api/deposits/create/', {
+      const response = await authService.authenticatedRequest(`${authService.getApiBaseUrl()}/deposits/create/`, {
         method: 'POST',
         body: JSON.stringify({
           coin_type: selectedCoin,

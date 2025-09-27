@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import UserLayout from '@/components/Layout/UserLayout';
+import { API_BASE_URL } from '@/services/auth';
 
 const SupportPage = () => {
   const router = useRouter();
@@ -67,7 +68,7 @@ const SupportPage = () => {
       // Get auth token from localStorage
       const token = localStorage.getItem('access_token');
       
-      const response = await fetch('http://localhost:8000/api/support/create/', {
+      const response = await fetch(`${API_BASE_URL}/support/create/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

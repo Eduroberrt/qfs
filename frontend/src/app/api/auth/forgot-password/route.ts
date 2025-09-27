@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
 
     // TODO: Replace with your actual backend API endpoint
     // For now, we'll simulate the API call
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'}/api/auth/forgot-password/`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.qfsvaultledger.org'}/api/auth/forgot-password/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

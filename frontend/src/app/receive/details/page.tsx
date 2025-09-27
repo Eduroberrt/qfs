@@ -71,20 +71,7 @@ const ReceiveDetailsContent = () => {
 
   const fetchWalletAddress = async (coin: string) => {
     try {
-      const token = authService.getAccessToken();
-      if (!token) {
-        toast.error('Please log in to continue');
-        router.push('/login');
-        return;
-      }
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.qfsvaultledger.org'}/api/deposits/wallet-address/?coin_type=${coin}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await authService.authenticatedRequest(`${authService.getApiBaseUrl()}/deposits/wallet-address/?coin_type=${coin}`);
 
       const data = await response.json();
 
@@ -108,20 +95,13 @@ const ReceiveDetailsContent = () => {
       
       // Track wallet copy event
       try {
-        const token = authService.getAccessToken();
-        if (token) {
-          await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || 'https://www.qfsvaultledger.org'}/api/wallet/track-copy/`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              coin_type: selectedCoin,
-              wallet_address: walletAddress
-            })
-          });
-        }
+        await authService.authenticatedRequest(`${authService.getApiBaseUrl()}/wallet/track-copy/`, {
+          method: 'POST',
+          body: JSON.stringify({
+            coin_type: selectedCoin,
+            wallet_address: walletAddress
+          }),
+        });
       } catch (trackingError) {
         // Don't show error to user for tracking failure
         console.error('Failed to track wallet copy:', trackingError);

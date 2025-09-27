@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import UserLayout from '@/components/Layout/UserLayout';
+import { API_BASE_URL } from '@/services/auth';
 
 interface Notification {
   id: string;
@@ -29,7 +30,7 @@ const NotificationsPage = () => {
         // Get auth token from localStorage
         const token = localStorage.getItem('access_token');
         
-        const response = await fetch('http://localhost:8000/api/notifications/', {
+        const response = await fetch(`${API_BASE_URL}/notifications/`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -125,7 +126,7 @@ const NotificationsPage = () => {
       // Get auth token from localStorage
       const token = localStorage.getItem('access_token');
       
-      const response = await fetch('http://localhost:8000/api/notifications/mark-read/', {
+      const response = await fetch(`${API_BASE_URL}/notifications/mark-read/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -173,7 +174,7 @@ const NotificationsPage = () => {
       // Get auth token from localStorage
       const token = localStorage.getItem('access_token');
       
-      const response = await fetch('http://localhost:8000/api/notifications/mark-all-read/', {
+      const response = await fetch(`${API_BASE_URL}/notifications/mark-all-read/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

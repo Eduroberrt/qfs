@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import AdminLayout from '../../../components/AdminLayout';
+import { API_BASE_URL } from '@/services/auth';
 
 interface SupportTicket {
   id: number;
@@ -48,7 +49,7 @@ export default function AdminSupportPage() {
       // Get auth token from localStorage
       const token = localStorage.getItem('access_token');
       
-      const response = await fetch('http://localhost:8000/api/support/admin/tickets/', {
+      const response = await fetch(`${API_BASE_URL}/support/admin/tickets/`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -139,7 +140,7 @@ export default function AdminSupportPage() {
       // Get auth token from localStorage
       const token = localStorage.getItem('access_token');
       
-      const response = await fetch('http://localhost:8000/api/support/admin/reply/', {
+      const response = await fetch(`${API_BASE_URL}/support/admin/reply/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -243,7 +244,7 @@ export default function AdminSupportPage() {
       const token = localStorage.getItem('access_token');
       
       // Note: This endpoint would need to be created in the backend
-      const response = await fetch(`http://localhost:8000/api/support/admin/tickets/${ticketId}/status/`, {
+      const response = await fetch(`${API_BASE_URL}/support/admin/tickets/${ticketId}/status/`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
