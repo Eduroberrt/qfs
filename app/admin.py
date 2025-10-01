@@ -21,22 +21,33 @@ class TransactionAdmin(admin.ModelAdmin):
 
 @admin.register(KYCVerification)
 class KYCVerificationAdmin(admin.ModelAdmin):
-    list_display = ['user', 'status', 'document_type', 'submitted_at', 'reviewed_at', 'reviewed_by']
+    list_display = ['user', 'status', 'document_type', 'document_link', 'submitted_at', 'reviewed_at', 'reviewed_by']
     list_filter = ['status', 'document_type', 'submitted_at']
     search_fields = ['user__username', 'user__email', 'user__first_name']
-    readonly_fields = ['submitted_at', 'reviewed_at']
+    readonly_fields = ['submitted_at', 'reviewed_at', 'document_link']
     
     fieldsets = (
         ('User Information', {
             'fields': ('user', 'status')
         }),
         ('Document Information', {
-            'fields': ('document_type', 'document_file')
+            'fields': ('document_type', 'document_file', 'document_link')
         }),
         ('Timestamps', {
             'fields': ('submitted_at',)
         }),
     )
+    
+    def document_link(self, obj):
+        """Display clickable link to document file"""
+        if obj.document_file:
+            return format_html(
+                '<a href="{}" target="_blank" style="color: #0066cc; text-decoration: underline;">📄 View Document</a>',
+                obj.document_file.url
+            )
+        return "No document uploaded"
+    document_link.short_description = "Document"
+    document_link.allow_tags = True
     
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = list(self.readonly_fields)
@@ -131,12 +142,12 @@ class NotificationAdmin(admin.ModelAdmin):
 
 
 class DepositTransactionForm(forms.ModelForm):
-    """Custom form for DepositTransaction to remove placeholder"""
+    """Custom form for DepositTransaction to indicate USD amount"""
     class Meta:
         model = DepositTransaction
         fields = '__all__'
         widgets = {
-            'amount': forms.NumberInput(attrs={'placeholder': ''}),
+            'amount': forms.NumberInput(attrs={'placeholder': 'Enter amount in USD (e.g., 2000.00)'}),
         }
 
 
@@ -154,7 +165,8 @@ class DepositTransactionAdmin(admin.ModelAdmin):
             'fields': ('user', 'coin_type')
         }),
         ('Transaction Details', {
-            'fields': ('amount', 'status', 'created_at')
+            'fields': ('amount', 'status', 'created_at'),
+            'description': 'Amount should be entered in USD (e.g., if user deposits $2000 worth of any crypto, enter 2000.00)'
         }),
         ('Email Status', {
             'fields': ('email_sent',)
@@ -162,11 +174,11 @@ class DepositTransactionAdmin(admin.ModelAdmin):
     )
     
     def amount_formatted(self, obj):
-        """Display amount with 2 decimal places"""
+        """Display amount with 2 decimal places and USD symbol"""
         if obj.amount is not None:
-            return f"{float(obj.amount):.2f}"
+            return f"${float(obj.amount):.2f} USD"
         return "Not set"
-    amount_formatted.short_description = "Amount"
+    amount_formatted.short_description = "Amount (USD)"
     
     def email_sent_status(self, obj):
         """Display email sent status with colors"""

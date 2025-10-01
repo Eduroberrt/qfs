@@ -8,6 +8,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import Aoscompo from "@/utils/aos";
 import { usePathname } from "next/navigation";
 import ToasterContext from "@/app/api/contex/ToasetContex";
+import TawkToChat from "@/components/TawkToChat";
 
 const font = DM_Sans({ subsets: ["latin"] });
 
@@ -34,6 +35,7 @@ export default function RootLayout({
             {!isDashboardArea && <Footer />}
           </Aoscompo>
           {!isDashboardArea && <ScrollToTop />}
+          {isDashboardArea && <TawkToChat />}
         </ThemeProvider>
       </body>
     </html>

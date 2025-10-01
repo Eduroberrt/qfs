@@ -28,7 +28,7 @@ def handle_deposit_status_change(sender, instance, created, **kwargs):
                     user=instance.user,
                     type='deposit_confirmed',
                     title=f'Deposit #{instance.id} Confirmed',
-                    message=f'Your {instance.get_coin_type_display()} deposit of {instance.amount:.2f} has been confirmed and credited to your wallet.',
+                    message=f'Your {instance.get_coin_type_display()} deposit of ${instance.amount:.2f} USD has been confirmed and credited to your wallet.',
                     created_at=timezone.now()
                 )
                 

@@ -123,15 +123,29 @@ class AuthService {
 
   // Get current user profile
   async getProfile(): Promise<User> {
-    const response = await this.authenticatedRequest(`${API_BASE_URL}/auth/profile/`);
-    
-    const result = await response.json();
+    try {
+      const response = await this.authenticatedRequest(`${API_BASE_URL}/auth/profile/`);
+      
+      const result = await response.json();
 
-    if (!response.ok) {
-      throw new Error(result.error || 'Failed to get user profile');
+      if (!response.ok) {
+        // If still unauthorized after refresh attempt, logout user
+        if (response.status === 401) {
+          this.logout();
+          throw new Error('Session expired. Please log in again.');
+        }
+        throw new Error(result.error || 'Failed to get user profile');
+      }
+
+      return result.user;
+    } catch (error: any) {
+      // If it's a session expiry, logout and throw appropriate error
+      if (error.message.includes('Session expired')) {
+        throw error;
+      }
+      // For other errors, provide more specific messaging
+      throw new Error('Failed to load user profile. Please try refreshing the page or log in again.');
     }
-
-    return result.user;
   }
 
   // Store tokens in localStorage
@@ -153,7 +167,32 @@ class AuthService {
   // Check if user is authenticated
   isAuthenticated(): boolean {
     const token = this.getAccessToken();
-    return !!token;
+    if (!token) return false;
+    
+    // Check if token is expired (basic check)
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const now = Date.now() / 1000;
+      return payload.exp > now;
+    } catch {
+      // If we can't parse the token, assume it's invalid
+      return false;
+    }
+  }
+
+  // Check if token will expire soon (within 5 minutes)
+  isTokenExpiringSoon(): boolean {
+    const token = this.getAccessToken();
+    if (!token) return true;
+    
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const now = Date.now() / 1000;
+      const fiveMinutesFromNow = now + (5 * 60); // 5 minutes
+      return payload.exp < fiveMinutesFromNow;
+    } catch {
+      return true;
+    }
   }
 
   // Logout user
@@ -198,6 +237,17 @@ class AuthService {
       throw new Error('No access token found');
     }
 
+    // Proactively refresh token if it's expiring soon
+    if (this.isTokenExpiringSoon()) {
+      try {
+        console.log('Token expiring soon, refreshing proactively...');
+        token = await this.refreshToken();
+        console.log('Proactive token refresh successful');
+      } catch (error) {
+        console.warn('Proactive token refresh failed, will try again if request fails:', error);
+      }
+    }
+
     // Add authorization header (only set Content-Type if not FormData)
     const headers: HeadersInit = {
       'Authorization': `Bearer ${token}`,
@@ -217,7 +267,10 @@ class AuthService {
     // If token expired, try to refresh
     if (response.status === 401) {
       try {
+        console.log('Token expired, attempting refresh...');
         token = await this.refreshToken();
+        console.log('Token refreshed successfully');
+        
         // Retry request with new token  
         const retryHeaders: HeadersInit = {
           'Authorization': `Bearer ${token}`,
@@ -233,10 +286,13 @@ class AuthService {
           ...options,
           headers: retryHeaders,
         });
+        
+        console.log('Retry request completed with status:', response.status);
       } catch (error) {
-        // Refresh failed, but don't logout - let user stay logged in
-        console.warn('Token refresh failed, but keeping user logged in:', error);
-        // Just return the original 401 response instead of logging out
+        console.error('Token refresh failed:', error);
+        // If refresh fails, logout the user
+        this.logout();
+        throw new Error('Session expired. Please log in again.');
       }
     }
 

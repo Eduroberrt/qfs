@@ -94,6 +94,53 @@ def serve_images(request, path):
     debug_info = f"Image not found in any location\nStatic root: {settings.STATIC_ROOT}\nTried paths: {possible_paths}"
     raise Http404(f"Image file not found\n{debug_info}")
 
+def serve_media_file(request, path):
+    """Securely serve media files (requires admin authentication)"""
+    from django.http import Http404, HttpResponseForbidden, FileResponse
+    from django.utils._os import safe_join
+    from django.contrib.auth.decorators import user_passes_test
+    import os
+    import mimetypes
+    
+    # Check if user is admin/staff
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden("Authentication required.")
+    
+    if not (request.user.is_staff or request.user.is_superuser):
+        return HttpResponseForbidden("Admin privileges required to access media files.")
+    
+    # Construct safe file path
+    file_path = safe_join(settings.MEDIA_ROOT, path)
+    
+    if not file_path or not os.path.exists(file_path) or not os.path.isfile(file_path):
+        # Provide debug info for admin users
+        debug_info = f"Media file not found: {path}\nMedia root: {settings.MEDIA_ROOT}\nFull path: {file_path}"
+        raise Http404(debug_info)
+    
+    # Determine content type
+    content_type, _ = mimetypes.guess_type(file_path)
+    if not content_type:
+        content_type = 'application/octet-stream'
+    
+    try:
+        # Return file response
+        response = FileResponse(
+            open(file_path, 'rb'),
+            content_type=content_type,
+        )
+        
+        # Add security headers
+        response['X-Frame-Options'] = 'DENY'
+        response['X-Content-Type-Options'] = 'nosniff'
+        
+        # Add filename for download
+        filename = os.path.basename(file_path)
+        response['Content-Disposition'] = f'inline; filename="{filename}"'
+        
+        return response
+    except Exception as e:
+        raise Http404(f"Error serving media file: {str(e)}")
+
 def get_token_views():
     """Lazy import for JWT token views"""
     from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -122,6 +169,9 @@ urlpatterns = [
     # Serve images and assets
     re_path(r'^images/(?P<path>.*)$', serve_images, name='serve_images'),
     re_path(r'^assets/(?P<path>.*)$', serve_images, name='serve_assets'),
+    
+    # Secure media file serving (requires admin authentication)
+    re_path(r'^media/(?P<path>.*)$', serve_media_file, name='serve_media'),
     
     # Serve Next.js app for all other routes EXCEPT Django paths
     # Use negative lookahead to exclude admin, api, _next, static, media, images, assets

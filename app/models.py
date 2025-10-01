@@ -221,7 +221,7 @@ class DepositTransaction(models.Model):
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='deposit_transactions')
     coin_type = models.CharField(max_length=20, choices=COIN_CHOICES)
-    amount = models.DecimalField(max_digits=20, decimal_places=8, null=True, blank=True)
+    amount = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True, help_text="Deposit amount in USD")
     wallet_address = models.CharField(max_length=255)  # Generated wallet address for user
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     admin_notes = models.TextField(blank=True, null=True)
@@ -241,15 +241,16 @@ class DepositTransaction(models.Model):
 
 
 class Wallet(models.Model):
-    """User Wallet Model for tracking cryptocurrency balances"""
+    """User Wallet Model for tracking cryptocurrency balances in USD"""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='wallet')
-    bitcoin_balance = models.DecimalField(max_digits=20, decimal_places=8, default=0)
-    ethereum_balance = models.DecimalField(max_digits=20, decimal_places=8, default=0)
-    ripple_balance = models.DecimalField(max_digits=20, decimal_places=8, default=0)
-    stellar_balance = models.DecimalField(max_digits=20, decimal_places=8, default=0)
-    usdt_balance = models.DecimalField(max_digits=20, decimal_places=8, default=0)
-    bnb_balance = models.DecimalField(max_digits=20, decimal_places=8, default=0)
-    bnb_tiger_balance = models.DecimalField(max_digits=20, decimal_places=8, default=0)
+    # Store balances in USD equivalent (2 decimal places for currency)
+    bitcoin_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0, help_text="Bitcoin balance in USD")
+    ethereum_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0, help_text="Ethereum balance in USD")
+    ripple_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0, help_text="Ripple balance in USD")
+    stellar_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0, help_text="Stellar balance in USD")
+    usdt_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0, help_text="USDT balance in USD")
+    bnb_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0, help_text="BNB balance in USD")
+    bnb_tiger_balance = models.DecimalField(max_digits=15, decimal_places=2, default=0, help_text="BNB Tiger balance in USD")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

@@ -34,21 +34,8 @@ def send_deposit_confirmation_email(deposit: DepositTransaction) -> bool:
             return False
             
         # Prepare email context
-        # Conversion rates for USD calculation
-        conversion_rates = {
-            'bitcoin': 67234.56,
-            'ethereum': 3456.78,
-            'ripple': 0.5234,
-            'stellar': 0.1123,
-            'usdt': 1.00,
-            'bnb': 543.21,
-            'bnb_tiger': 0.0045
-        }
-        
-        # Calculate USD amount
-        usd_amount = 0
-        if deposit.amount and deposit.coin_type in conversion_rates:
-            usd_amount = float(deposit.amount) * conversion_rates[deposit.coin_type]
+        # Since deposit amounts are now stored in USD, use directly
+        usd_amount = float(deposit.amount) if deposit.amount else 0
         
         context = {
             'user': deposit.user,

@@ -51,20 +51,8 @@ const Dashboard = () => {
     let total = 0;
     cryptoAssets.forEach(asset => {
       const balance = parseFloat(getUserBalance(asset.key));
-      // For this example, we'll use simplified conversion rates
-      // In a real application, you'd fetch current market prices
-      const conversionRates: { [key: string]: number } = {
-        bitcoin: 67234.56,
-        ethereum: 3456.78,
-        ripple: 0.5234,
-        stellar: 0.1123,
-        usdt: 1.00,
-        bnb: 543.21,
-        bnb_tiger: 0.0045
-      };
-      
-      const usdValue = balance * (conversionRates[asset.key] || 0);
-      total += usdValue;
+      // Since balances are now stored in USD, simply sum them up
+      total += balance;
     });
     
     return total.toLocaleString('en-US', {
@@ -111,15 +99,24 @@ const Dashboard = () => {
         console.error('Authentication check failed:', error);
         console.error('Error details:', error instanceof Error ? error.message : String(error));
         
+        // Check if it's a session expiry
+        if (error instanceof Error && error.message.includes('Session expired')) {
+          console.log('Session expired - redirecting to login');
+          toast.error('Your session has expired. Please log in again.');
+          router.push('/signin');
+          return;
+        }
+        
         // Check if it's a token issue
         const token = authService.getAccessToken();
         if (!token) {
           console.log('No access token found - redirecting to login');
           toast.error('Please log in to access the dashboard.');
-          router.push('/auth/login');
+          router.push('/signin');
         } else {
-          console.log('Token exists but profile fetch failed');
-          toast.error('Failed to load user profile. Please try refreshing the page or log in again.');
+          console.log('Token exists but profile fetch failed - this might be a temporary network issue');
+          toast.error('Failed to load user profile. Please try refreshing the page.');
+          // Don't redirect immediately, let user try refreshing first
         }
       } finally {
         setLoading(false);
